@@ -41,7 +41,7 @@ class graph:
             self.graph[str(end_id)] = []
             self.graph[str(end_id)].append(edge)
 
-    def dijkstra_route(self, source):    
+    def dijkstra(self, source):    
         
         dist = {}
         prev = {}
