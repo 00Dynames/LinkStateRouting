@@ -22,6 +22,7 @@ while True:
     try:
         if (c_time - n_time) >= 1: # if at least a second has passed
             print "c_time -> ", c_time
+            print n.neighbours
             n.broadcast_lsp()
             n_time = c_time
             # broadcast and check neighbours
@@ -31,7 +32,7 @@ while True:
             #print n.net_topology.dijkstra(n.id)
             # parse dijkstra's outpun into correct format
             time.sleep(0.1) 
-            n.route()
+            #n.route()
             # run dijkstra's and print out paths
         
         data, addr = n._socket.recvfrom(n.s_port)

@@ -19,7 +19,7 @@ class node:
 
         self.lsp = "" 
         self.net_topology = graph(self.id)
-        self.neighbours = {} # => {node_id: (cost, port)}
+        self.neighbours = {} # => {node_id: (cost, port, KA_count)}
 
         # iterate through config file and insert nieghbours
         # Assume the config file is in the same directory 
@@ -30,7 +30,7 @@ class node:
         for line in config_file:
             line = line.rstrip('\n')
             line = line.split(" ")
-            self.neighbours[line[0]] = (float(line[1]), int(line[2]))
+            self.neighbours[line[0]] = (float(line[1]), int(line[2], 0))
             self.net_topology.insert_edge(self.id, line[0], line[1])
 
         #print self.net_topology.graph
