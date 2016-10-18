@@ -105,18 +105,27 @@ class node:
                 self.net_topology.insert_edge(node, edge[0], edge[1])
                 #print edge
 
-
+    # need to test
     def forward_lsp(self, source, packet):
         for n_id in self.neighbours.keys():
             if not self.net_topology.has_edge(source, n_id) or n_id != source:
                 self._socket.sendto(packet, ("127.0.0.1", self.neighbours[n_id][1]))
 
+    # print routes
+    def route(self):
+        dist, prev = self.net_topology.dijkstra(self.id)    
+        
+        for n_id in dist.keys():
+           
+            path = []
+            curr_n = n_id
+            if n_id != self.id:
+                while curr_n != self.id:
+                    path.append(prev[curr_n])
+                    curr_n = prev[curr_n]
 
-
-
-
-
-
-
-
+            path.reverse()
+            path.append(n_id)
+            #print n_id, path
+            print "least-cost path to node %s: %s and the cost is %.1f" % (n_id, "".join(path), dist[n_id])
 

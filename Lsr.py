@@ -28,11 +28,13 @@ while True:
     
         elif (c_time - n_time) <= 0.5 and (c_time - n_time) >= 0.45: # approximately 30s interval
             #print "c_time => ", c_time
-            pass
+            #print n.net_topology.dijkstra(n.id)
+            # parse dijkstra's outpun into correct format
+            n.route()
             # run dijkstra's and print out paths
         
         data, addr = n._socket.recvfrom(n.s_port)
-        print data
+        #print n.id + " " + str(addr[1]) + " => " + data
 
         if re.match("^LSP", data):
             in_edges = n.parse_lsp(data)
@@ -40,7 +42,7 @@ while True:
             n.update_net_topology(in_edges)
             # forward lsp
             n.forward_lsp((in_edges.keys())[0], data)
-            n.net_topology.show()
+            #n.net_topology.show()
 
 
         #elif data[0] == "KA":

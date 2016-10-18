@@ -27,7 +27,6 @@ class graph:
         self.num_edges += 1
 
         edge = (str(end_id), float(cost))
-        print start_id, edge
 
         if start_id in self.graph.keys():
             self.graph[str(start_id)].append(edge)
