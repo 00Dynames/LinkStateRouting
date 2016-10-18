@@ -15,7 +15,7 @@ class node:
         self.s_port = int(node_port)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._socket.bind(("127.0.0.1", int(node_port)))
-        self._socket.settimeout(0.05)
+        self._socket.settimeout(0.1)
 
         self.lsp = "" 
         self.net_topology = graph(self.id)

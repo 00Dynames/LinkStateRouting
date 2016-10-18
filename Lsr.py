@@ -21,15 +21,16 @@ while True:
 
     try:
         if (c_time - n_time) >= 1: # if at least a second has passed
-            #print "c_time -> ", c_time
+            print "c_time -> ", c_time
             n.broadcast_lsp()
             n_time = c_time
             # broadcast and check neighbours
     
-        elif (c_time - n_time) <= 0.5 and (c_time - n_time) >= 0.45: # approximately 30s interval
-            #print "c_time => ", c_time
+        elif (c_time - n_time) <= 0.51 and (c_time - n_time) >= 0.5: # approximately 30s interval
+            #print "c_time => ", c_time, prev_time
             #print n.net_topology.dijkstra(n.id)
             # parse dijkstra's outpun into correct format
+            time.sleep(0.1) 
             n.route()
             # run dijkstra's and print out paths
         
