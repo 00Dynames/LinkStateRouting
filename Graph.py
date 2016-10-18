@@ -18,12 +18,16 @@ class graph:
         self.graph[str(node_id)] = []
         self.num_nodes += 1
 
-    # will also duplicate existing edges
+    # does not add edges if they already exist 
     def insert_edge(self, start_id, end_id, cost):
         
+        if self.has_edge(start_id, end_id):
+            return 
+
         self.num_edges += 1
 
-        edge = (str(end_id), int(cost))
+        edge = (str(end_id), float(cost))
+        print start_id, edge
 
         if start_id in self.graph.keys():
             self.graph[str(start_id)].append(edge)
@@ -32,7 +36,7 @@ class graph:
             self.graph[str(start_id)] = []
             self.graph[str(start_id)].append(edge)
              
-        edge = (str(start_id), int(cost))     
+        edge = (str(start_id), float(cost))     
 
         if end_id in self.graph.keys():
             self.graph[str(end_id)].append(edge)
@@ -40,6 +44,8 @@ class graph:
             self.num_nodes += 1
             self.graph[str(end_id)] = []
             self.graph[str(end_id)].append(edge)
+
+    # def remove_edge(self, start_id, end_id)
 
     def dijkstra(self, source):    
         
@@ -75,4 +81,25 @@ class graph:
 
         return dist, prev
 
+    def get_nodes(self):
+        return self.graph.keys()
+
+    def has_edge(self, start_id, end_id):
+        
+        if start_id not in self.graph.keys():
+            return False
+
+        edges = [str(i[0]) for i in self.graph[str(start_id)]] 
+        #print str(start_id), str(end_id), edges
+        
+        if str(end_id) in edges:
+            return True
+        else:
+            return False
+    
+    def show(self):
+        for node in self.graph.keys():
+            print node
+            for edge in self.graph[node]:
+                print "    " + str(edge)
 
