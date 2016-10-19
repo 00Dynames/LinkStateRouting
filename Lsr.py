@@ -18,23 +18,39 @@ n.broadcast_lsp()
 while True:
    
     c_time = time.time()
+    time_diff = c_time - n_time
 
     try:
-        if (c_time - n_time) >= 1: # if at least a second has passed
+        if time_diff >= 1: # if at least a second has passed
             print "c_time -> ", c_time
-            print n.neighbours
+            print n.neighbour_ka
+            print n.neighbours.keys()
             n.broadcast_lsp()
+            #n.broadcast_ka()
             n_time = c_time
+            n.check_neighbours()
+            n.clear_ka()
             # broadcast and check neighbours
     
-        elif (c_time - n_time) <= 0.51 and (c_time - n_time) >= 0.5: # approximately 30s interval
+        elif time_diff <= 0.51 and time_diff >= 0.5: # approximately 30s interval
             #print "c_time => ", c_time, prev_time
             #print n.net_topology.dijkstra(n.id)
             # parse dijkstra's outpun into correct format
             time.sleep(0.1) 
             #n.route()
             # run dijkstra's and print out paths
+            #n.broadcast_ka()
         
+        elif (time_diff <= 0.26 and time_diff >= 0.23
+           or time_diff <= 0.76 and time_diff >= 0.73):
+            # broadcast KA message
+            #print "KA", time.time()
+            time.sleep(0.1)
+            #n.broadcast_ka()
+
+        n.broadcast_ka() # not sure if this is a good idea here
+                         # this makes the previous broadcasts redundant
+
         data, addr = n._socket.recvfrom(n.s_port)
         #print n.id + " " + str(addr[1]) + " => " + data
 
@@ -45,9 +61,8 @@ while True:
             # forward lsp
             n.forward_lsp((in_edges.keys())[0], data)
             #n.net_topology.show()
-
-
-        #elif data[0] == "KA":
+        elif re.match("^KA", data):
+            n.parse_ka(data)
          #   print "KA"
 
 
@@ -56,4 +71,3 @@ while True:
     except socket.timeout:
         pass
         #print "T.O"
-

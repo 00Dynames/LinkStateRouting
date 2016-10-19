@@ -20,6 +20,7 @@ class node:
         self.lsp = "" 
         self.net_topology = graph(self.id)
         self.neighbours = {} # => {node_id: (cost, port, KA_count)}
+        self.neighbour_ka = {}
 
         # iterate through config file and insert nieghbours
         # Assume the config file is in the same directory 
@@ -30,7 +31,8 @@ class node:
         for line in config_file:
             line = line.rstrip('\n')
             line = line.split(" ")
-            self.neighbours[line[0]] = (float(line[1]), int(line[2], 0))
+            self.neighbours[line[0]] = (float(line[1]), int(line[2]))
+            self.neighbour_ka[line[0]] = 0
             self.net_topology.insert_edge(self.id, line[0], line[1])
 
         #print self.net_topology.graph
@@ -78,8 +80,21 @@ class node:
             self.lsp = self.make_lsp(self.neighbours[n_id][1])
             self._socket.sendto(self.lsp, ("127.0.0.1", self.neighbours[n_id][1]))
 
-           
-        
+    def broadcast_ka(self):
+        for n_id in self.neighbours.keys():
+            KA_message = "KA:%s:%s:%s" % (self.s_port, self.neighbours[n_id][1], self.id)   
+            self._socket.sendto(KA_message, ("127.0.0.1", self.neighbours[n_id][1]))
+
+    def parse_ka(self, packet):
+        data = packet.split(":")
+        self.neighbour_ka[data[3]] += 1
+
+    def clear_ka(self):
+        for n_id in self.neighbour_ka.keys():
+            self.neighbour_ka[n_id] = 0
+
+
+    # currently deprecated    
     def parse_packet(self, packet):
         # parse a packet and figure out which kind it is
         result = {}
@@ -94,7 +109,11 @@ class node:
 
     # def send lsp
     
-    #def update_neighbours
+    def check_neighbours(self):
+        for n_id in self.neighbour_ka.keys():
+            if self.neighbour_ka[n_id] == 0:
+                del self.neighbours[n_id]
+                del self.neighbour_ka[n_id]
 
     def update_net_topology(self, new_edges):
         # iterate through each key in the new_edges dict
