@@ -78,11 +78,13 @@ class node:
     def broadcast_lsp(self):
         for n_id in self.neighbours.keys():
             self.lsp = self.make_lsp(self.neighbours[n_id][1])
+            #print self.lsp
             self._socket.sendto(self.lsp, ("127.0.0.1", self.neighbours[n_id][1]))
 
     def broadcast_ka(self):
         for n_id in self.neighbours.keys():
             KA_message = "KA:%s:%s:%s" % (self.s_port, self.neighbours[n_id][1], self.id)   
+            self._socket.sendto(KA_message, ("127.0.0.1", self.neighbours[n_id][1]))
             self._socket.sendto(KA_message, ("127.0.0.1", self.neighbours[n_id][1]))
 
     def parse_ka(self, packet):
@@ -93,36 +95,52 @@ class node:
         for n_id in self.neighbour_ka.keys():
             self.neighbour_ka[n_id] = 0
 
-
-    # currently deprecated    
-    def parse_packet(self, packet):
-        # parse a packet and figure out which kind it is
-        result = {}
-        
-        tmp_packet = packet.split(":")
-        if tmp_packet[0] == "LSP":
-            result = self.parse_lsp(packet)
-        elif tmp_packet[0] == "HB":
-            pass # parse heartbeat
-        
-        return result 
-
-    # def send lsp
-    
     def check_neighbours(self):
         for n_id in self.neighbour_ka.keys():
             if self.neighbour_ka[n_id] == 0:
                 del self.neighbours[n_id]
                 del self.neighbour_ka[n_id]
+                self.net_topology.remove_edge(self.id, n_id)
 
     def update_net_topology(self, new_edges):
-        # iterate through each key in the new_edges dict
-        # and add each edge in the lists
+        # get node id, get its edges in the graph, get its edges from new_edges
+        n_id = (new_edges.keys())[0]
+        # print new_edges
 
-        for node in new_edges.keys():
-            for edge in new_edges[node]:
-                self.net_topology.insert_edge(node, edge[0], edge[1])
-                #print edge
+        if n_id == self.id:
+            return
+
+        # edges in lsp
+        lsp_neighbours = [edge[0] for edge in new_edges[n_id]] #edges in packet    
+        #print "lsp", n_id, lsp_neighbours
+        # edges in graph
+        grph_neighbours = [edge[0] for edge in self.net_topology.graph[n_id]] # kind of dodge
+        #print "grph", n_id, grph_neighbours
+
+        # lsp diff 
+        lsp_diff = [item for item in lsp_neighbours if item not in grph_neighbours]
+        #print "lsp_diff", n_id, lsp_diff
+        # grph diff
+        grph_diff = [item for item in grph_neighbours if item not in lsp_neighbours]
+        #print "grph_diff", n_id, grph_diff
+
+        if len(lsp_diff) == 0 and len(grph_diff) == 0:
+            return 
+
+        # if there's an edge in new_edges that isn't in then insert
+        if len(lsp_diff) > 0:
+            #print "insert"
+            for edge_id in lsp_diff:
+                cost = ([item for item in new_edges[n_id] if item[0] == edge_id])[0][1]
+                #print n_id, edge_id, cost
+                self.net_topology.insert_edge(n_id, edge_id, cost)
+
+        # if there's an edge in the neighbours then remove an edge
+        if len(grph_diff) > 0:
+            #print "remove"
+            for edge_id in grph_diff:
+                #print n_id, edge_id
+                self.net_topology.remove_edge(n_id, edge_id)
 
     # need to test
     def forward_lsp(self, source, packet):

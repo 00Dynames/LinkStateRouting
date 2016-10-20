@@ -14,7 +14,12 @@ g.insert_edge("C", "F", 5)
 g.insert_edge("D", "E", 1)
 g.insert_edge("E", "F", 2)
 
-print g.dijkstra("A")
+#print g.dijkstra("A")
+g.show()
+print
+g.remove_edge("A", "C")
+g.remove_edge("A", "F")
+g.show()
 
 h = Graph.graph("A")
 h.insert_edge("A", "B", 2)
@@ -29,6 +34,6 @@ h.insert_edge("E", "G", 1)
 h.insert_edge("E", "F", 2)
 h.insert_edge("F", "G", 3)
 
-print h.dijkstra("A")
+#print h.dijkstra("A")
 
 #print g.graph, g.num_edges, g.num_nodes

@@ -22,9 +22,14 @@ while True:
 
     try:
         if time_diff >= 1: # if at least a second has passed
-            print "c_time -> ", c_time
+            print n.id, " time_diff -> ", time_diff
+            #print n.lsp
+            #print n.neighbours
             print n.neighbour_ka
-            print n.neighbours.keys()
+            n.net_topology.show()
+            
+            #print n.neighbour_ka
+            #print n.neighbours.keys()
             n.broadcast_lsp()
             #n.broadcast_ka()
             n_time = c_time

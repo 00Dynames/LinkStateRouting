@@ -44,7 +44,22 @@ class graph:
             self.graph[str(end_id)] = []
             self.graph[str(end_id)].append(edge)
 
-    # def remove_edge(self, start_id, end_id)
+    def remove_edge(self, start_id, end_id):
+        
+        # pre-condition -> start_id and end_id must be nodes that exist in the graph
+        # nothing happens if there is already no edge
+
+        for edge in self.graph[start_id]:
+            if edge[0] == end_id:
+                self.graph[start_id].remove(edge)
+        
+        for edge in self.graph[end_id]:
+            if edge[0] == start_id:
+                self.graph[end_id].remove(edge)
+
+        for node in self.graph.keys():
+            if len(self.graph[node]) == 0:
+                del self.graph[node]
 
     def dijkstra(self, source):    
         
