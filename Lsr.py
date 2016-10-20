@@ -25,8 +25,8 @@ while True:
             print n.id, " time_diff -> ", time_diff
             #print n.lsp
             #print n.neighbours
-            print n.neighbour_ka
-            n.net_topology.show()
+            #print n.neighbour_ka
+            #n.net_topology.show()
             
             #print n.neighbour_ka
             #print n.neighbours.keys()
@@ -42,7 +42,7 @@ while True:
             #print n.net_topology.dijkstra(n.id)
             # parse dijkstra's outpun into correct format
             time.sleep(0.1) 
-            #n.route()
+            n.route()
             # run dijkstra's and print out paths
             #n.broadcast_ka()
         
