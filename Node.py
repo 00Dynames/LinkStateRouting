@@ -89,7 +89,10 @@ class node:
 
     def parse_ka(self, packet):
         data = packet.split(":")
+        #try:
         self.neighbour_ka[data[3]] += 1
+        #except KeyError, e:
+        #    pass
 
     def clear_ka(self):
         for n_id in self.neighbour_ka.keys():
@@ -110,37 +113,44 @@ class node:
         if n_id == self.id:
             return
 
-        # edges in lsp
-        lsp_neighbours = [edge[0] for edge in new_edges[n_id]] #edges in packet    
-        #print "lsp", n_id, lsp_neighbours
-        # edges in graph
-        grph_neighbours = [edge[0] for edge in self.net_topology.graph[n_id]] # kind of dodge
-        #print "grph", n_id, grph_neighbours
+        if n_id in self.net_topology.graph.keys():
 
-        # lsp diff 
-        lsp_diff = [item for item in lsp_neighbours if item not in grph_neighbours]
-        #print "lsp_diff", n_id, lsp_diff
-        # grph diff
-        grph_diff = [item for item in grph_neighbours if item not in lsp_neighbours]
-        #print "grph_diff", n_id, grph_diff
+            # edges in lsp
+            lsp_neighbours = [edge[0] for edge in new_edges[n_id]] #edges in packet    
+            #print "lsp", n_id, lsp_neighbours
+            # edges in graph
+            grph_neighbours = [edge[0] for edge in self.net_topology.graph[n_id]] # kind of dodge
+            #print "grph", n_id, grph_neighbours
 
-        if len(lsp_diff) == 0 and len(grph_diff) == 0:
-            return 
+            # lsp diff 
+            lsp_diff = [item for item in lsp_neighbours if item not in grph_neighbours]
+            #print "lsp_diff", n_id, lsp_diff
+            # grph diff
+            grph_diff = [item for item in grph_neighbours if item not in lsp_neighbours]
+            #print "grph_diff", n_id, grph_diff
 
-        # if there's an edge in new_edges that isn't in then insert
-        if len(lsp_diff) > 0:
-            #print "insert"
-            for edge_id in lsp_diff:
-                cost = ([item for item in new_edges[n_id] if item[0] == edge_id])[0][1]
-                #print n_id, edge_id, cost
-                self.net_topology.insert_edge(n_id, edge_id, cost)
+            if len(lsp_diff) == 0 and len(grph_diff) == 0:
+                return 
 
-        # if there's an edge in the neighbours then remove an edge
-        if len(grph_diff) > 0:
-            #print "remove"
-            for edge_id in grph_diff:
-                #print n_id, edge_id
-                self.net_topology.remove_edge(n_id, edge_id)
+            # if there's an edge in new_edges that isn't in then insert
+            if len(lsp_diff) > 0:
+                #print "insert"
+                for edge_id in lsp_diff:
+                    cost = ([item for item in new_edges[n_id] if item[0] == edge_id])[0][1]
+                    #print n_id, edge_id, cost
+                    self.net_topology.insert_edge(n_id, edge_id, cost)
+
+            # if there's an edge in the neighbours then remove an edge
+            if len(grph_diff) > 0:
+                #print "remove"
+                for edge_id in grph_diff:
+                    #print n_id, edge_id
+                    self.net_topology.remove_edge(n_id, edge_id)
+        else:
+                        
+            for edge in new_edges[n_id]:
+                self.net_topology.insert_edge(n_id, edge[0], edge[1])
+
 
     # need to test
     def forward_lsp(self, source, packet):
