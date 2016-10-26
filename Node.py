@@ -163,7 +163,9 @@ class node:
         dist, prev = self.net_topology.dijkstra(self.id)    
         
         for n_id in dist.keys():
-           
+            if n_id == self.id:
+                continue
+
             path = []
             curr_n = n_id
             if n_id != self.id:
